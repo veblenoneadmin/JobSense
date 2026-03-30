@@ -7,24 +7,44 @@ import React, { useState, useCallback, useMemo } from 'react';
 // ============================================
 
 const T = {
-  bg: '#0f1114', card: 'rgba(26,29,33,0.95)', cardHover: '#242830', cardSolid: '#1a1d21',
-  border: 'rgba(255,255,255,0.1)', borderLight: 'rgba(255,255,255,0.06)',
-  accent: '#667eea', accentLight: '#7c8aef', accentDark: '#5a67d8',
-  accentDim: 'rgba(102,126,234,0.15)', accentGlow: 'rgba(102,126,234,0.3)',
-  secondary: '#f093fb',
-  white: '#f7fafc', text: '#a0aec0', textMuted: '#718096', textDark: '#4a5568',
-  green: '#48bb78', greenDim: 'rgba(72,187,120,0.12)',
-  red: '#f56565', redDim: 'rgba(245,101,101,0.12)',
-  amber: '#f6ad55', amberDim: 'rgba(246,173,85,0.12)',
-  blue: '#4facfe', blueDim: 'rgba(79,172,254,0.12)',
-  mauve: '#b794f4', mauveDim: 'rgba(183,148,244,0.12)',
-  purple: '#667eea', purpleDim: 'rgba(102,126,234,0.12)',
-  glass: 'rgba(45,49,57,0.9)', glassBorder: 'rgba(255,255,255,0.15)',
-  gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-  gradientSecondary: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-  shadow: '0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
-  shadowHover: '0 8px 25px rgba(0,0,0,0.5), 0 0 30px rgba(102,126,234,0.2)',
-  radius: 16, radiusSm: 10, radiusXs: 6,
+  // VS Code Dark+ exact colors
+  bg: '#1E1E1E',           // editor background
+  sidebar: '#252526',      // sidebar / activity bar background
+  card: '#252526',         // panel backgrounds
+  cardHover: '#2A2D2E',   // list hover
+  cardSolid: '#252526',
+  border: '#3E3E42',       // panel borders
+  borderLight: '#303031',  // subtle borders
+  accent: '#007ACC',       // VS Code blue accent
+  accentLight: '#1177BB',
+  accentDark: '#0E639C',
+  accentDim: 'rgba(0,122,204,0.15)',
+  white: '#D4D4D4',        // editor foreground
+  text: '#CCCCCC',         // menu/sidebar text
+  textMuted: '#858585',    // line numbers, muted
+  textDark: '#5A5A5A',     // very muted
+  green: '#4EC9B0',        // teal green (VS Code token)
+  greenDim: 'rgba(78,201,176,0.12)',
+  red: '#F44747',          // VS Code red
+  redDim: 'rgba(244,71,71,0.12)',
+  amber: '#DCDCAA',        // VS Code yellow token
+  amberDim: 'rgba(220,220,170,0.12)',
+  blue: '#569CD6',         // VS Code blue token
+  blueDim: 'rgba(86,156,214,0.12)',
+  mauve: '#C586C0',        // VS Code pink/mauve token
+  mauveDim: 'rgba(197,134,192,0.12)',
+  purple: '#B267E6',       // purple
+  purpleDim: 'rgba(178,103,230,0.12)',
+  statusBar: '#007ACC',    // status bar blue
+  tabActive: '#1E1E1E',   // active tab = editor bg
+  tabInactive: '#2D2D30', // inactive tab
+  selection: '#264F78',    // selection blue
+  listActive: '#37373D',  // active list item
+  listHover: '#2A2D2E',   // hover list item
+  badge: '#007ACC',        // badge blue
+  inputBg: '#3C3C3C',     // input background
+  inputBorder: '#3C3C3C', // input border
+  focus: '#007FD4',        // focus ring
 };
 
 interface TimeLog { person: string; hours: number; task: string; }
@@ -44,16 +64,16 @@ interface ServiceCategory { cat: string; items: ServiceItem[]; }
 interface QuoteItem extends ServiceItem { qty: number; }
 
 const STATUSES = [
-  { key: 'booked', label: 'Booked', color: '#4facfe', bg: 'rgba(79,172,254,0.12)' },
-  { key: 'scheduled', label: 'Scheduled', color: '#48bb78', bg: 'rgba(72,187,120,0.12)' },
-  { key: 'on_site', label: 'On Site', color: '#f6ad55', bg: 'rgba(246,173,85,0.12)' },
-  { key: 'uploaded', label: 'Uploaded', color: '#b794f4', bg: 'rgba(183,148,244,0.12)' },
-  { key: 'in_edit', label: 'In Edit', color: '#667eea', bg: 'rgba(102,126,234,0.12)' },
-  { key: 'qc_review', label: 'QC Review', color: '#7c8aef', bg: 'rgba(124,138,239,0.12)' },
-  { key: 'delivered', label: 'Delivered', color: '#48bb78', bg: 'rgba(72,187,120,0.12)' },
-  { key: 'approved', label: 'Approved', color: '#38a169', bg: 'rgba(56,161,105,0.12)' },
-  { key: 'invoiced', label: 'Invoiced', color: '#f093fb', bg: 'rgba(240,147,251,0.12)' },
-  { key: 'paid', label: 'Paid', color: '#4ade80', bg: 'rgba(74,222,128,0.12)' },
+  { key: 'booked', label: 'Booked', color: '#569CD6', bg: 'rgba(86,156,214,0.15)' },
+  { key: 'scheduled', label: 'Scheduled', color: '#4EC9B0', bg: 'rgba(78,201,176,0.15)' },
+  { key: 'on_site', label: 'On Site', color: '#DCDCAA', bg: 'rgba(220,220,170,0.15)' },
+  { key: 'uploaded', label: 'Uploaded', color: '#C586C0', bg: 'rgba(197,134,192,0.15)' },
+  { key: 'in_edit', label: 'In Edit', color: '#569CD6', bg: 'rgba(86,156,214,0.15)' },
+  { key: 'qc_review', label: 'QC Review', color: '#CE9178', bg: 'rgba(206,145,120,0.15)' },
+  { key: 'delivered', label: 'Delivered', color: '#4EC9B0', bg: 'rgba(78,201,176,0.15)' },
+  { key: 'approved', label: 'Approved', color: '#6A9955', bg: 'rgba(106,153,85,0.15)' },
+  { key: 'invoiced', label: 'Invoiced', color: '#C586C0', bg: 'rgba(197,134,192,0.15)' },
+  { key: 'paid', label: 'Paid', color: '#B5CEA8', bg: 'rgba(181,206,168,0.15)' },
 ];
 const getSt = (k: string) => STATUSES.find((s) => s.key === k) || { label: k, color: '#555', bg: 'rgba(85,85,85,0.1)' };
 
@@ -118,34 +138,34 @@ const INIT: Job[] = [
 ];
 
 const SRC: Record<string, string> = { hubspot: 'H', eversense: 'E', xero: 'X', fireflies: 'F', jobsense: 'J', content: 'C' };
-const SRC_COLOR: Record<string, string> = { hubspot: '#FF7A59', eversense: '#667eea', xero: '#13B5EA', fireflies: '#b794f4', jobsense: T.accent, content: '#48bb78' };
+const SRC_COLOR: Record<string, string> = { hubspot: '#CE9178', eversense: '#569CD6', xero: '#4EC9B0', fireflies: '#C586C0', jobsense: T.accent, content: '#6A9955' };
 
 const INV_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  none: { label: 'No Invoice', color: T.textDark, bg: 'rgba(255,255,255,0.04)' },
-  draft: { label: 'Draft', color: T.textMuted, bg: 'rgba(255,255,255,0.06)' },
-  sent: { label: 'Sent', color: T.amber, bg: T.amberDim },
-  overdue: { label: 'Overdue', color: T.red, bg: T.redDim },
-  paid: { label: 'Paid', color: T.green, bg: T.greenDim },
+  none: { label: 'No Invoice', color: '#5A5A5A', bg: '#2D2D30' },
+  draft: { label: 'Draft', color: '#858585', bg: '#2D2D30' },
+  sent: { label: 'Sent', color: '#DCDCAA', bg: 'rgba(220,220,170,0.12)' },
+  overdue: { label: 'Overdue', color: '#F44747', bg: 'rgba(244,71,71,0.12)' },
+  paid: { label: 'Paid', color: '#4EC9B0', bg: 'rgba(78,201,176,0.12)' },
 };
 
 // --- UI Components ---
 function Dot({ color, size = 6 }: { color: string; size?: number }) {
-  return <span style={{ width: size, height: size, borderRadius: '50%', background: color, display: 'inline-block', flexShrink: 0, boxShadow: `0 0 6px ${color}40` }} />;
+  return <span style={{ width: size, height: size, borderRadius: '50%', background: color, display: 'inline-block', flexShrink: 0 }} />;
 }
 
 function Chip({ children, color, bg, small }: { children: React.ReactNode; color?: string; bg?: string; small?: boolean }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: bg || 'rgba(255,255,255,0.06)', color: color || T.text, padding: small ? '2px 8px' : '3px 10px', borderRadius: T.radiusXs, fontSize: small ? 10 : 11, fontWeight: 600, whiteSpace: 'nowrap', border: '1px solid ' + (bg ? 'transparent' : 'rgba(255,255,255,0.06)'), backdropFilter: 'blur(8px)' }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: bg || '#3C3C3C', color: color || T.text, padding: small ? '1px 6px' : '2px 8px', borderRadius: 3, fontSize: small ? 10 : 11, fontWeight: 500, whiteSpace: 'nowrap' }}>
       {children}
     </span>
   );
 }
 
-function Av({ id, size = 28 }: { id: string; size?: number }) {
+function Av({ id, size = 24 }: { id: string; size?: number }) {
   const p = getP(id);
   if (!p) return null;
   return (
-    <div title={`${p.name} - ${p.role} - ${$x(p.rate)}/hr`} style={{ width: size, height: size, borderRadius: '50%', background: `linear-gradient(135deg, ${p.color}, ${p.color}99)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.38, fontWeight: 700, color: '#fff', flexShrink: 0, border: '2px solid rgba(255,255,255,0.1)', boxShadow: `0 0 8px ${p.color}40` }}>
+    <div title={`${p.name} - ${p.role} - ${$x(p.rate)}/hr`} style={{ width: size, height: size, borderRadius: '50%', background: p.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.38, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
       {p.name[0]}
     </div>
   );
@@ -154,7 +174,7 @@ function Av({ id, size = 28 }: { id: string; size?: number }) {
 function SLAChip({ job }: { job: Job }) {
   if (['paid', 'approved', 'invoiced', 'delivered'].includes(job.status)) return null;
   const rem = sla(job.type) - dd(job.scheduledDate, '2026-03-27');
-  const c = rem < 0 ? T.red : rem <= 1 ? T.amber : T.green;
+  const c = rem < 0 ? T.red : rem <= 1 ? '#DCDCAA' : T.green;
   const bg = rem < 0 ? T.redDim : rem <= 1 ? T.amberDim : T.greenDim;
   return <Chip color={c} bg={bg} small>{rem < 0 ? Math.abs(rem) + 'd overdue' : rem + 'd left'}</Chip>;
 }
@@ -166,7 +186,7 @@ function InvBadge({ status }: { status: string }) {
 
 function SrcIcon({ src }: { src: string }) {
   return (
-    <span style={{ width: 18, height: 18, borderRadius: T.radiusXs, background: `linear-gradient(135deg, ${SRC_COLOR[src] || '#555'}, ${SRC_COLOR[src] || '#555'}aa)`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: '#fff', flexShrink: 0, boxShadow: `0 0 6px ${SRC_COLOR[src] || '#555'}30` }}>
+    <span style={{ width: 16, height: 16, borderRadius: 2, background: SRC_COLOR[src] || '#555', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
       {SRC[src] || '?'}
     </span>
   );
@@ -176,11 +196,11 @@ function MarginBar({ job }: { job: Job }) {
   const p = jProfit(job);
   const pct = Math.min(Math.max(p.margin, 0), 100);
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <div style={{ flex: 1, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.06)' }}>
-        <div style={{ width: pct + '%', height: '100%', borderRadius: 2, background: `linear-gradient(90deg, ${mc(p.margin)}, ${mc(p.margin)}cc)`, boxShadow: `0 0 6px ${mc(p.margin)}30`, transition: 'width 0.3s ease' }} />
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+      <div style={{ flex: 1, height: 3, borderRadius: 1, background: '#3C3C3C' }}>
+        <div style={{ width: pct + '%', height: '100%', borderRadius: 1, background: mc(p.margin) }} />
       </div>
-      <span style={{ fontSize: 10, fontWeight: 700, color: mc(p.margin), minWidth: 30, textShadow: `0 0 8px ${mc(p.margin)}40` }}>{p.margin.toFixed(0)}%</span>
+      <span style={{ fontSize: 10, fontWeight: 600, color: mc(p.margin), minWidth: 28 }}>{p.margin.toFixed(0)}%</span>
     </div>
   );
 }
@@ -213,13 +233,16 @@ function CreateJobModal({ onClose, onCreate }: { onClose: () => void; onCreate: 
     onClose();
   };
 
-  const inputStyle: React.CSSProperties = { background: 'rgba(255,255,255,0.04)', border: '2px solid rgba(255,255,255,0.08)', borderRadius: T.radiusSm, padding: '10px 14px', fontSize: 13, color: T.white, width: '100%', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s, box-shadow 0.2s' };
-  const labelStyle: React.CSSProperties = { fontSize: 11, color: T.textMuted, fontWeight: 600, marginBottom: 5, display: 'block', textTransform: 'uppercase', letterSpacing: '0.06em' };
+  const inputStyle: React.CSSProperties = { background: T.inputBg, border: '1px solid ' + T.inputBorder, borderRadius: 2, padding: '6px 8px', fontSize: 13, color: T.white, width: '100%', outline: 'none', boxSizing: 'border-box' };
+  const labelStyle: React.CSSProperties = { fontSize: 11, color: T.text, fontWeight: 400, marginBottom: 4, display: 'block' };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onClose}>
-      <div style={{ background: T.glass, backdropFilter: 'blur(20px)', border: '1px solid ' + T.glassBorder, borderRadius: T.radius, padding: 28, width: 500, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 40px rgba(0,0,0,0.6)' }} onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ fontSize: 20, fontWeight: 700, color: T.white, margin: '0 0 20px', background: T.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>New Job</h2>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onClose}>
+      <div style={{ background: T.sidebar, border: '1px solid ' + T.border, borderRadius: 0, padding: 0, width: 480, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 5px 30px rgba(0,0,0,0.5)' }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid ' + T.border }}>
+          <h2 style={{ fontSize: 14, fontWeight: 400, color: T.white, margin: 0 }}>New Job</h2>
+        </div>
+        <div style={{ padding: '16px 20px' }}>
 
         <label style={labelStyle}>Client</label>
         <input value={client} onChange={(e) => setClient(e.target.value)} placeholder="Client or company name" style={{ ...inputStyle, marginBottom: 12 }} />
@@ -268,14 +291,15 @@ function CreateJobModal({ onClose, onCreate }: { onClose: () => void; onCreate: 
         <label style={labelStyle}>Notes</label>
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} style={{ ...inputStyle, marginBottom: 16, resize: 'vertical' }} />
 
-        <div style={{ background: T.accentDim, borderRadius: T.radiusSm, padding: 14, marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(102,126,234,0.2)' }}>
-          <span style={{ fontSize: 12, color: T.text }}>Quoted Price</span>
-          <span style={{ fontSize: 22, fontWeight: 700, color: T.accent, textShadow: '0 0 12px rgba(102,126,234,0.3)' }}>{$(quoted)}</span>
+        <div style={{ background: T.bg, borderRadius: 0, padding: 12, marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 12, color: T.textMuted }}>Quoted Price</span>
+          <span style={{ fontSize: 18, fontWeight: 600, color: T.accent }}>{$(quoted)}</span>
         </div>
 
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.06)', color: T.text, border: '1px solid rgba(255,255,255,0.1)', borderRadius: T.radiusSm, padding: '10px 20px', fontSize: 13, cursor: 'pointer', transition: 'all 0.2s' }}>Cancel</button>
-          <button onClick={handleCreate} style={{ background: T.gradient, color: '#fff', border: 'none', borderRadius: T.radiusSm, padding: '10px 28px', fontSize: 13, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 12px rgba(102,126,234,0.3)', transition: 'all 0.2s' }}>Create Job</button>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button onClick={onClose} style={{ background: 'transparent', color: T.text, border: '1px solid ' + T.border, borderRadius: 0, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
+          <button onClick={handleCreate} style={{ background: T.accentDark, color: '#fff', border: 'none', borderRadius: 0, padding: '6px 20px', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Create Job</button>
+        </div>
         </div>
       </div>
     </div>
@@ -296,7 +320,7 @@ function JobPanel({ job, onClose, onMove }: { job: Job; onClose: () => void; onM
   if (job.callSummary) tabs.splice(1, 0, 'call');
 
   return (
-    <div style={{ background: T.card, backdropFilter: 'blur(20px)', border: '1px solid ' + T.glassBorder, borderRadius: T.radius, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', boxShadow: T.shadow }}>
+    <div style={{ background: T.card, border: '1px solid ' + T.border, borderRadius: 0, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', boxShadow: 'none' }}>
       <div style={{ padding: '16px 20px', borderBottom: '1px solid ' + T.border }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
@@ -305,12 +329,12 @@ function JobPanel({ job, onClose, onMove }: { job: Job; onClose: () => void; onM
             <InvBadge status={job.invoice} />
             {job.recurring && <Chip color={T.blue} bg={T.blueDim} small>Recurring</Chip>}
           </div>
-          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: T.textMuted, fontSize: 14, cursor: 'pointer', lineHeight: 1, width: 26, height: 26, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>×</button>
+          <button onClick={onClose} style={{ background: '#3C3C3C', border: '1px solid #3C3C3C', color: T.textMuted, fontSize: 14, cursor: 'pointer', lineHeight: 1, width: 26, height: 26, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>×</button>
         </div>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: T.white, margin: '0 0 3px' }}>{job.client}</h2>
         <div style={{ fontSize: 12, color: T.textMuted }}>{job.contact} · {job.phone}</div>
         {next && (
-          <button onClick={() => onMove(job.id, next.key)} style={{ marginTop: 10, background: T.gradient, color: '#fff', border: 'none', borderRadius: T.radiusSm, padding: '8px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer', width: '100%', boxShadow: '0 4px 12px rgba(102,126,234,0.3)', transition: 'all 0.2s' }}>
+          <button onClick={() => onMove(job.id, next.key)} style={{ marginTop: 10, background: T.accent, color: '#fff', border: 'none', borderRadius: 2, padding: '8px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer', width: '100%', transition: 'all 0.2s' }}>
             Move to {next.label} →
           </button>
         )}
@@ -327,7 +351,7 @@ function JobPanel({ job, onClose, onMove }: { job: Job; onClose: () => void; onM
       <div style={{ padding: '16px 20px', flex: 1, overflowY: 'auto' }}>
         {tab === 'overview' && (
           <div>
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: T.radiusSm, padding: 14, marginBottom: 16, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 6, border: '1px solid ' + T.border }}>
+            <div style={{ background: '#2D2D30', borderRadius: 2, padding: 14, marginBottom: 16, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 6, border: '1px solid ' + T.border }}>
               {[
                 { l: 'Quoted', v: $(p.rev), c: T.accent },
                 { l: 'Cost', v: $(p.cost), c: T.text },
@@ -336,7 +360,7 @@ function JobPanel({ job, onClose, onMove }: { job: Job; onClose: () => void; onM
               ].map((m, i) => (
                 <div key={i} style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 10, color: T.textMuted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>{m.l}</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: m.c, textShadow: `0 0 10px ${m.c}30` }}>{m.v}</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: m.c }}>{m.v}</div>
                 </div>
               ))}
             </div>
@@ -348,7 +372,7 @@ function JobPanel({ job, onClose, onMove }: { job: Job; onClose: () => void; onM
                 { l: 'Scheduled', v: job.scheduledDate },
                 { l: 'Location', v: job.location },
               ].map((item, i) => (
-                <div key={i} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: T.radiusXs, padding: '8px 10px', border: '1px solid ' + T.borderLight }}>
+                <div key={i} style={{ background: '#2D2D30', borderRadius: 2, padding: '8px 10px', border: '1px solid ' + T.borderLight }}>
                   <div style={{ fontSize: 10, color: T.textMuted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 2 }}>{item.l}</div>
                   {item.chip ? <SLAChip job={job} /> : <div style={{ fontSize: 12, color: T.white, fontWeight: 500 }}>{item.v}</div>}
                 </div>
@@ -364,7 +388,7 @@ function JobPanel({ job, onClose, onMove }: { job: Job; onClose: () => void; onM
                   if (!pr) return null;
                   const hrs = (job.timeLogs || []).filter((l) => l.person === id).reduce((s, l) => s + l.hours, 0);
                   return (
-                    <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.04)', borderRadius: T.radiusXs, padding: '6px 10px', border: '1px solid ' + T.borderLight }}>
+                    <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#3C3C3C', borderRadius: 2, padding: '6px 10px', border: '1px solid ' + T.borderLight }}>
                       <Av id={id} size={22} />
                       <div>
                         <div style={{ fontSize: 11, color: T.white, fontWeight: 600 }}>{pr.name}</div>
@@ -378,7 +402,7 @@ function JobPanel({ job, onClose, onMove }: { job: Job; onClose: () => void; onM
             {job.notes && (
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: T.text, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Notes</div>
-                <div style={{ fontSize: 12, color: T.textMuted, background: 'rgba(255,255,255,0.03)', borderRadius: T.radiusXs, padding: 10, lineHeight: 1.6, border: '1px solid ' + T.borderLight }}>{job.notes}</div>
+                <div style={{ fontSize: 12, color: T.textMuted, background: '#2D2D30', borderRadius: 2, padding: 10, lineHeight: 1.6, border: '1px solid ' + T.borderLight }}>{job.notes}</div>
               </div>
             )}
           </div>
@@ -403,7 +427,7 @@ function JobPanel({ job, onClose, onMove }: { job: Job; onClose: () => void; onM
                 <span style={{ color: T.textMuted }}>Budget consumed</span>
                 <span style={{ color: mc(p.margin), fontWeight: 600 }}>{p.rev > 0 ? ((p.cost / p.rev) * 100).toFixed(0) : 0}%</span>
               </div>
-              <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.04)' }}>
+              <div style={{ height: 6, borderRadius: 3, background: '#3C3C3C' }}>
                 <div style={{ width: Math.min(p.rev > 0 ? (p.cost / p.rev) * 100 : 0, 100) + '%', height: '100%', borderRadius: 3, background: p.rev > 0 && p.cost / p.rev > 0.7 ? T.red : p.cost / p.rev > 0.5 ? T.amber : T.green }} />
               </div>
             </div>
@@ -491,7 +515,7 @@ function TodayPage({ jobs, onSelect }: { jobs: Job[]; onSelect: (job: Job) => vo
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: T.white, margin: 0, background: T.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Today</h1>
+          <h1 style={{ fontSize: 26, fontWeight: 800, color: T.white, margin: 0 }}>Today</h1>
           <p style={{ color: T.textMuted, fontSize: 12, margin: '4px 0 0' }}>Thursday 27 March 2026</p>
         </div>
       </div>
@@ -503,16 +527,16 @@ function TodayPage({ jobs, onSelect }: { jobs: Job[]; onSelect: (job: Job) => vo
           { l: 'Active', v: jobs.filter((j) => !['paid'].includes(j.status)).length, c: T.accent, s: $(jobs.filter((j) => !['paid'].includes(j.status)).reduce((s, j) => s + j.quoted, 0)) + ' value' },
           { l: 'Outstanding', v: $(outstanding), c: T.amber },
         ].map((m, i) => (
-          <div key={i} style={{ background: T.glass, backdropFilter: 'blur(15px)', border: '1px solid ' + T.glassBorder, borderRadius: T.radius, padding: '14px 16px', boxShadow: T.shadow }}>
+          <div key={i} style={{ background: T.sidebar, border: '1px solid ' + T.border, borderRadius: 0, padding: '14px 16px', boxShadow: 'none' }}>
             <div style={{ fontSize: 10, color: T.textMuted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{m.l}</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: m.c, marginTop: 4, textShadow: `0 0 12px ${m.c}30` }}>{m.v}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: m.c, marginTop: 4 }}>{m.v}</div>
             {m.s && <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2 }}>{m.s}</div>}
           </div>
         ))}
       </div>
 
       {overdue.length > 0 && (
-        <div style={{ background: 'rgba(245,101,101,0.08)', border: '1px solid rgba(245,101,101,0.2)', borderRadius: T.radiusSm, padding: '10px 16px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, backdropFilter: 'blur(8px)' }}>
+        <div style={{ background: 'rgba(245,101,101,0.08)', border: '1px solid rgba(245,101,101,0.2)', borderRadius: 2, padding: '10px 16px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, backdropFilter: 'blur(8px)' }}>
           <Dot color={T.red} size={8} />
           <span style={{ color: T.red, fontSize: 12, fontWeight: 600 }}>{overdue.length} overdue</span>
           <span style={{ color: T.textMuted, fontSize: 11 }}>— {overdue.map((j) => j.client).join(', ')}</span>
@@ -528,14 +552,14 @@ function TodayPage({ jobs, onSelect }: { jobs: Job[]; onSelect: (job: Job) => vo
             const pr = jProfit(j);
             void pr;
             return (
-              <div key={j.id} onClick={() => onSelect(j)} style={{ background: T.glass, backdropFilter: 'blur(15px)', border: '1px solid ' + T.glassBorder, borderRadius: T.radius, padding: 14, marginBottom: 8, cursor: 'pointer', borderLeft: '4px solid ' + getSt(j.status).color, transition: 'all 0.2s', boxShadow: T.shadow }}>
+              <div key={j.id} onClick={() => onSelect(j)} style={{ background: T.sidebar, border: '1px solid ' + T.border, borderRadius: 0, padding: 14, marginBottom: 8, cursor: 'pointer', borderLeft: '4px solid ' + getSt(j.status).color, transition: 'all 0.2s', boxShadow: 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
                   <span style={{ fontSize: 10, color: T.textDark, fontWeight: 700, fontFamily: 'monospace' }}>{j.id}</span>
                   <Chip color={getSt(j.status).color} bg={getSt(j.status).bg} small><Dot color={getSt(j.status).color} size={4} /> {getSt(j.status).label}</Chip>
                   <Chip small>{getTy(j.type).label}</Chip>
                   <SLAChip job={j} />
                   <InvBadge status={j.invoice} />
-                  <span style={{ marginLeft: 'auto', fontSize: 14, fontWeight: 700, color: T.accent, textShadow: `0 0 10px ${T.accentGlow}` }}>{$(j.quoted)}</span>
+                  <span style={{ marginLeft: 'auto', fontSize: 14, fontWeight: 700, color: T.accent }}>{$(j.quoted)}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
@@ -559,7 +583,7 @@ function TodayPage({ jobs, onSelect }: { jobs: Job[]; onSelect: (job: Job) => vo
             <Dot color={T.amber} size={7} /> Needs Attention
           </div>
           {needsAttention.map((j) => (
-            <div key={j.id} onClick={() => onSelect(j)} style={{ background: T.glass, backdropFilter: 'blur(10px)', border: '1px solid ' + T.glassBorder, borderRadius: T.radiusSm, padding: '10px 14px', marginBottom: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: 'all 0.2s' }}>
+            <div key={j.id} onClick={() => onSelect(j)} style={{ background: T.sidebar, border: '1px solid ' + T.border, borderRadius: 2, padding: '10px 14px', marginBottom: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: 'all 0.2s' }}>
               <Chip color={getSt(j.status).color} bg={getSt(j.status).bg} small><Dot color={getSt(j.status).color} size={4} /> {getSt(j.status).label}</Chip>
               <span style={{ fontSize: 12, color: T.white, flex: 1, fontWeight: 500 }}>{j.client}</span>
               <SLAChip job={j} />
@@ -573,7 +597,7 @@ function TodayPage({ jobs, onSelect }: { jobs: Job[]; onSelect: (job: Job) => vo
       <div>
         <div style={{ fontSize: 11, fontWeight: 700, color: T.text, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Upcoming</div>
         {jobs.filter((j) => ['booked', 'scheduled'].includes(j.status)).sort((a, b) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime()).map((j) => (
-          <div key={j.id} onClick={() => onSelect(j)} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid ' + T.borderLight, borderRadius: T.radiusSm, padding: '10px 14px', marginBottom: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: 'all 0.2s' }}>
+          <div key={j.id} onClick={() => onSelect(j)} style={{ background: '#2D2D30', border: '1px solid ' + T.borderLight, borderRadius: 2, padding: '10px 14px', marginBottom: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: 'all 0.2s' }}>
             <Chip color={getSt(j.status).color} bg={getSt(j.status).bg} small>{getSt(j.status).label}</Chip>
             <span style={{ fontSize: 12, color: T.white, flex: 1, fontWeight: 500 }}>{j.client}</span>
             <span style={{ fontSize: 10, color: T.textMuted }}>{j.scheduledDate}</span>
@@ -592,20 +616,20 @@ function BoardPage({ jobs, onSelect }: { jobs: Job[]; onSelect: (job: Job) => vo
   const cols = ['booked', 'scheduled', 'on_site', 'uploaded', 'in_edit', 'qc_review', 'delivered', 'invoiced', 'paid'];
   return (
     <div>
-      <h1 style={{ fontSize: 24, fontWeight: 800, color: T.white, margin: '0 0 18px', background: T.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Job Board</h1>
+      <h1 style={{ fontSize: 24, fontWeight: 800, color: T.white, margin: '0 0 18px' }}>Job Board</h1>
       <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 16 }}>
         {cols.map((col) => {
           const st = getSt(col);
           const cj = jobs.filter((j) => j.status === col);
           return (
             <div key={col} style={{ minWidth: 210, flex: '0 0 220px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, padding: '6px 10px', background: `${st.bg}`, borderRadius: T.radiusXs, border: '1px solid ' + T.borderLight }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, padding: '6px 10px', background: `${st.bg}`, borderRadius: 2, border: '1px solid ' + T.borderLight }}>
                 <Dot color={st.color} size={7} />
                 <span style={{ fontSize: 11, fontWeight: 600, color: T.white }}>{st.label}</span>
-                <span style={{ fontSize: 10, color: T.textMuted, marginLeft: 'auto', background: 'rgba(255,255,255,0.06)', padding: '1px 7px', borderRadius: 10, fontWeight: 700 }}>{cj.length}</span>
+                <span style={{ fontSize: 10, color: T.textMuted, marginLeft: 'auto', background: '#3C3C3C', padding: '1px 7px', borderRadius: 10, fontWeight: 700 }}>{cj.length}</span>
               </div>
               {cj.map((j) => (
-                <div key={j.id} onClick={() => onSelect(j)} style={{ background: T.glass, backdropFilter: 'blur(10px)', border: '1px solid ' + T.glassBorder, borderRadius: T.radiusSm, padding: 12, marginBottom: 6, cursor: 'pointer', borderLeft: '4px solid ' + st.color, transition: 'all 0.2s', boxShadow: T.shadow }}>
+                <div key={j.id} onClick={() => onSelect(j)} style={{ background: T.sidebar, border: '1px solid ' + T.border, borderRadius: 2, padding: 12, marginBottom: 6, cursor: 'pointer', borderLeft: '4px solid ' + st.color, transition: 'all 0.2s', boxShadow: 'none' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                     <span style={{ fontSize: 9, color: T.textDark, fontWeight: 700, fontFamily: 'monospace' }}>{j.id}</span>
                     <SLAChip job={j} />
@@ -640,15 +664,15 @@ function JobsPage({ jobs, onSelect }: { jobs: Job[]; onSelect: (job: Job) => voi
 
   return (
     <div>
-      <h1 style={{ fontSize: 24, fontWeight: 800, color: T.white, margin: '0 0 16px', background: T.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>All Jobs ({filtered.length})</h1>
+      <h1 style={{ fontSize: 24, fontWeight: 800, color: T.white, margin: '0 0 16px' }}>All Jobs ({filtered.length})</h1>
       <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search client or job ID..." style={{ background: 'rgba(255,255,255,0.04)', border: '2px solid rgba(255,255,255,0.08)', borderRadius: T.radiusSm, padding: '8px 14px', fontSize: 12, color: T.white, width: 240, outline: 'none', transition: 'border-color 0.2s' }} />
-        <select value={fs} onChange={(e) => setFs(e.target.value)} style={{ background: 'rgba(255,255,255,0.04)', border: '2px solid rgba(255,255,255,0.08)', borderRadius: T.radiusSm, padding: '8px 12px', fontSize: 11, color: T.text, outline: 'none' }}>
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search client or job ID..." style={{ background: '#3C3C3C', border: '2px solid #3C3C3C', borderRadius: 2, padding: '8px 14px', fontSize: 12, color: T.white, width: 240, outline: 'none', transition: 'border-color 0.2s' }} />
+        <select value={fs} onChange={(e) => setFs(e.target.value)} style={{ background: '#3C3C3C', border: '2px solid #3C3C3C', borderRadius: 2, padding: '8px 12px', fontSize: 11, color: T.text, outline: 'none' }}>
           <option value="all">All Statuses</option>
           {STATUSES.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
         </select>
       </div>
-      <div style={{ background: T.glass, backdropFilter: 'blur(15px)', border: '1px solid ' + T.glassBorder, borderRadius: T.radius, overflow: 'hidden', boxShadow: T.shadow }}>
+      <div style={{ background: T.sidebar, border: '1px solid ' + T.border, borderRadius: 0, overflow: 'hidden', boxShadow: 'none' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '56px 90px 1fr 80px 72px 60px 36px', gap: 0, padding: '10px 16px', borderBottom: '1px solid ' + T.border }}>
           {['ID', 'Status', 'Client', 'Invoice', 'Quoted', 'Margin', ''].map((h, i) => (
             <span key={i} style={{ fontSize: 10, color: T.textMuted, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</span>
@@ -667,7 +691,7 @@ function JobsPage({ jobs, onSelect }: { jobs: Job[]; onSelect: (job: Job) => voi
               </div>
               <InvBadge status={j.invoice} />
               <span style={{ fontSize: 12, fontWeight: 600, color: T.accent }}>{$(j.quoted)}</span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: mc(pr.margin), textShadow: `0 0 8px ${mc(pr.margin)}30` }}>{pr.margin.toFixed(0)}%</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: mc(pr.margin) }}>{pr.margin.toFixed(0)}%</span>
               <span style={{ fontSize: 12, color: T.textMuted }}>›</span>
             </div>
           );
@@ -694,7 +718,7 @@ function FinPage({ jobs, onSelect }: { jobs: Job[]; onSelect: (job: Job) => void
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
         <SrcIcon src="xero" />
-        <h1 style={{ fontSize: 24, fontWeight: 800, color: T.white, margin: 0, background: T.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Finance</h1>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: T.white, margin: 0 }}>Finance</h1>
         <span style={{ fontSize: 11, color: T.textMuted }}>March 2026</span>
       </div>
 
@@ -706,14 +730,14 @@ function FinPage({ jobs, onSelect }: { jobs: Job[]; onSelect: (job: Job) => void
           { l: 'Avg Margin', v: avgM.toFixed(1) + '%', c: mc(avgM) },
           { l: 'Awaiting', v: $(outs), c: T.amber },
         ].map((m, i) => (
-          <div key={i} style={{ background: T.glass, backdropFilter: 'blur(15px)', border: '1px solid ' + T.glassBorder, borderRadius: T.radius, padding: '14px 14px', boxShadow: T.shadow }}>
+          <div key={i} style={{ background: T.sidebar, border: '1px solid ' + T.border, borderRadius: 0, padding: '14px 14px', boxShadow: 'none' }}>
             <div style={{ fontSize: 10, color: T.textMuted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{m.l}</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: m.c, marginTop: 4, textShadow: `0 0 12px ${m.c}30` }}>{m.v}</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: m.c, marginTop: 4 }}>{m.v}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ background: T.glass, backdropFilter: 'blur(15px)', border: '1px solid ' + T.glassBorder, borderRadius: T.radius, padding: 18, marginBottom: 16, boxShadow: T.shadow }}>
+      <div style={{ background: T.sidebar, border: '1px solid ' + T.border, borderRadius: 0, padding: 18, marginBottom: 16, boxShadow: 'none' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: T.white, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Revenue by Service</div>
         {Object.entries(bt).sort((a, b) => b[1].rev - a[1].rev).map(([type, d]) => {
           const m = d.rev > 0 ? (d.profit / d.rev) * 100 : 0;
@@ -727,15 +751,15 @@ function FinPage({ jobs, onSelect }: { jobs: Job[]; onSelect: (job: Job) => void
                   <span style={{ color: mc(m), fontWeight: 700, minWidth: 28 }}>{m.toFixed(0)}%</span>
                 </div>
               </div>
-              <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.06)' }}>
-                <div style={{ width: (d.rev / mx) * 100 + '%', height: '100%', borderRadius: 2, background: T.gradient, boxShadow: '0 0 6px rgba(102,126,234,0.3)', transition: 'width 0.3s' }} />
+              <div style={{ height: 4, borderRadius: 2, background: '#3C3C3C' }}>
+                <div style={{ width: (d.rev / mx) * 100 + '%', height: '100%', borderRadius: 2, background: T.accent, transition: 'width 0.3s' }} />
               </div>
             </div>
           );
         })}
       </div>
 
-      <div style={{ background: T.glass, backdropFilter: 'blur(15px)', border: '1px solid ' + T.glassBorder, borderRadius: T.radius, overflow: 'hidden', boxShadow: T.shadow }}>
+      <div style={{ background: T.sidebar, border: '1px solid ' + T.border, borderRadius: 0, overflow: 'hidden', boxShadow: 'none' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: T.white, padding: '12px 16px', borderBottom: '1px solid ' + T.border, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Job P&L</div>
         {jobs.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()).map((j) => {
           const pr = jProfit(j);
@@ -858,13 +882,13 @@ function QuoteSensePage() {
   const afterTaxProfit = preTaxProfit > 0 ? preTaxProfit * 0.75 : preTaxProfit;
   const margin = total > 0 ? (afterTaxProfit / total) * 100 : 0;
 
-  const inputStyle: React.CSSProperties = { background: 'rgba(255,255,255,0.04)', border: '2px solid rgba(255,255,255,0.08)', borderRadius: T.radiusSm, padding: '8px 12px', fontSize: 12, color: T.white, outline: 'none', width: '100%', boxSizing: 'border-box', transition: 'border-color 0.2s' };
+  const inputStyle: React.CSSProperties = { background: '#3C3C3C', border: '2px solid #3C3C3C', borderRadius: 2, padding: '8px 12px', fontSize: 12, color: T.white, outline: 'none', width: '100%', boxSizing: 'border-box', transition: 'border-color 0.2s' };
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: T.white, margin: 0, background: T.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>QuoteSense</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: T.white, margin: 0 }}>QuoteSense</h1>
           <p style={{ color: T.textMuted, fontSize: 12, margin: '4px 0 0' }}>Build quotes with live margin tracking</p>
         </div>
         <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: T.textMuted, cursor: 'pointer' }}>
@@ -996,7 +1020,7 @@ function QuoteSensePage() {
                       </div>
                     ))}
                   </div>
-                  <div style={{ marginTop: 6, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.04)' }}>
+                  <div style={{ marginTop: 6, height: 4, borderRadius: 2, background: '#3C3C3C' }}>
                     <div style={{ width: Math.min(Math.max(margin, 0), 100) + '%', height: '100%', borderRadius: 2, background: mc(margin) }} />
                   </div>
                   {margin < 50 && margin > 0 && (
@@ -1064,15 +1088,16 @@ export default function JobSensePage() {
   const activeTab = tabs.find(t => t.id === page) || tabs[0];
 
   return (
-    <div style={{ height: '100vh', display: 'flex', background: T.bg, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: T.text }}>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: T.bg, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", color: T.text }}>
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
       {/* Sidebar */}
       <div style={{ width: 240, background: T.cardSolid, borderRight: '1px solid ' + T.border, display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
         {/* Brand */}
         <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid ' + T.border }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: T.radiusXs, background: T.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 15, boxShadow: '0 4px 12px rgba(102,126,234,0.3)' }}>J</div>
+            <div style={{ width: 32, height: 32, borderRadius: 2, background: T.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 15 }}>J</div>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 16, background: T.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>JobSense</div>
+              <div style={{ fontWeight: 700, fontSize: 16 }}>JobSense</div>
               <div style={{ fontSize: 10, color: T.textMuted }}>Veblen Group</div>
             </div>
           </div>
@@ -1086,7 +1111,7 @@ export default function JobSensePage() {
               onClick={() => setPage(t.id)}
               style={{
                 width: '100%', border: 'none', borderRadius: 0, padding: '12px 20px',
-                background: page === t.id ? 'rgba(102,126,234,0.12)' : 'transparent',
+                background: page === t.id ? 'rgba(0,122,204,0.2)' : 'transparent',
                 color: page === t.id ? T.accent : T.textMuted,
                 fontSize: 13, fontWeight: page === t.id ? 600 : 400,
                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
@@ -1102,7 +1127,7 @@ export default function JobSensePage() {
 
         {/* Sidebar Footer */}
         <div style={{ padding: '12px 20px', borderTop: '1px solid ' + T.border }}>
-          <button onClick={() => setShowCreate(true)} style={{ width: '100%', background: T.gradient, color: '#fff', border: 'none', borderRadius: T.radiusSm, padding: '10px 0', fontSize: 13, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 12px rgba(102,126,234,0.3)', transition: 'all 0.2s' }}>
+          <button onClick={() => setShowCreate(true)} style={{ width: '100%', background: T.accent, color: '#fff', border: 'none', borderRadius: 2, padding: '10px 0', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}>
             + New Job
           </button>
         </div>
@@ -1114,7 +1139,7 @@ export default function JobSensePage() {
         <div style={{ height: 48, background: T.cardSolid, borderBottom: '1px solid ' + T.border, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 14, fontWeight: 600, color: T.white }}>{activeTab.label}</span>
-            <span style={{ fontSize: 11, color: T.textMuted, padding: '2px 8px', background: 'rgba(255,255,255,0.04)', borderRadius: T.radiusXs }}>
+            <span style={{ fontSize: 11, color: T.textMuted, padding: '2px 8px', background: '#3C3C3C', borderRadius: 2 }}>
               {jobs.filter(j => !['paid'].includes(j.status)).length} active
             </span>
           </div>
@@ -1145,6 +1170,22 @@ export default function JobSensePage() {
               <JobPanel job={sel} onClose={() => setSel(null)} onMove={move} />
             </div>
           )}
+        </div>
+      </div>
+
+      </div>
+      {/* Status Bar — VS Code blue */}
+      <div style={{ height: 22, background: T.statusBar, display: 'flex', alignItems: 'center', padding: '0 10px', fontSize: 11, color: '#fff', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span>Jobs: {jobs.length}</span>
+          <span>Active: {jobs.filter(j => !['paid', 'approved', 'invoiced'].includes(j.status)).length}</span>
+          <span>MTD: {$(jobs.reduce((s, j) => s + j.quoted, 0))}</span>
+        </div>
+        <div style={{ flex: 1 }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {['HubSpot', 'Xero', 'Fireflies', 'EverSense'].map((s) => (
+            <span key={s}>{s} ✓</span>
+          ))}
         </div>
       </div>
 
