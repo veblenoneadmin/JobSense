@@ -286,8 +286,8 @@ function JobPanel({ job, onClose, onMove }: { job: Job; onClose: () => void; onM
   if (job.callSummary) tabs.splice(1, 0, 'call');
 
   return (
-    <div style={{ position: 'fixed', top: 0, right: 0, width: 480, height: '100vh', background: T.card, borderLeft: '1px solid ' + T.border, zIndex: 300, display: 'flex', flexDirection: 'column', boxShadow: '-10px 0 40px rgba(0,0,0,0.5)', overflowY: 'auto' }}>
-      <div style={{ padding: '14px 20px', borderBottom: '1px solid ' + T.border, position: 'sticky', top: 0, background: T.card, zIndex: 1 }}>
+    <div style={{ background: T.card, border: '1px solid ' + T.border, borderRadius: 8, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      <div style={{ padding: '14px 20px', borderBottom: '1px solid ' + T.border }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 10, color: T.textDark, fontWeight: 700 }}>{job.id}</span>
@@ -1048,61 +1048,91 @@ export default function JobSensePage() {
   }, []);
 
   const tabs = [
-    { id: 'today', label: 'Today' },
-    { id: 'board', label: 'Job Board' },
-    { id: 'jobs', label: 'All Jobs' },
-    { id: 'quotes', label: 'QuoteSense' },
-    { id: 'finance', label: 'Finance' },
+    { id: 'today', label: 'Today', icon: '📅' },
+    { id: 'board', label: 'Board', icon: '📋' },
+    { id: 'jobs', label: 'Jobs', icon: '📁' },
+    { id: 'quotes', label: 'Quotes', icon: '💰' },
+    { id: 'finance', label: 'Finance', icon: '📊' },
   ];
 
+  const activeTab = tabs.find(t => t.id === page) || tabs[0];
+
   return (
-    <div style={{ background: T.bg, minHeight: '100%', fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: T.text, margin: '-28px', padding: '20px 24px' }}>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: T.bg, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: T.text }}>
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
-      {/* Top nav */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginBottom: 24, borderBottom: '1px solid ' + T.border, paddingBottom: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 16, paddingBottom: 10 }}>
-          <div style={{ width: 26, height: 26, borderRadius: 6, background: 'linear-gradient(135deg,' + T.accent + ',' + T.accentLight + ')', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 12 }}>J</div>
-          <div>
-            <div style={{ fontWeight: 700, color: T.white, fontSize: 13, fontFamily: 'Georgia, serif', lineHeight: 1.1 }}>JobSense</div>
-            <div style={{ fontSize: 8, color: T.textDark, letterSpacing: '0.05em' }}>VEBLEN GROUP</div>
-          </div>
-        </div>
-
-        {tabs.map((t) => (
-          <button key={t.id} onClick={() => setPage(t.id)} style={{ padding: '10px 16px', background: 'none', border: 'none', borderBottom: page === t.id ? '2px solid ' + T.accent : '2px solid transparent', color: page === t.id ? T.white : T.textMuted, fontSize: 12, fontWeight: page === t.id ? 600 : 400, cursor: 'pointer', marginBottom: -1 }}>
-            {t.label}
-          </button>
-        ))}
-
-        <div style={{ flex: 1 }} />
-
-        {/* Connected systems */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 16, paddingBottom: 10 }}>
-          {['HubSpot', 'Xero', 'Fireflies', 'EverSense'].map((s) => (
-            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-              <Dot color={T.green} size={4} />
-              <span style={{ fontSize: 9, color: T.textDark }}>{s}</span>
-            </div>
+        {/* Activity Bar */}
+        <div style={{ width: 50, background: T.card, borderRight: '1px solid ' + T.border, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 0', flexShrink: 0 }}>
+          <div style={{ width: 22, height: 22, borderRadius: 5, background: 'linear-gradient(135deg,' + T.accent + ',' + T.accentLight + ')', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 11, marginBottom: 14 }}>J</div>
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setPage(t.id)}
+              title={t.label}
+              style={{
+                width: 36, height: 36, border: 'none', borderRadius: 6,
+                background: page === t.id ? T.accentDim : 'transparent',
+                color: page === t.id ? T.accent : T.textMuted,
+                fontSize: 16, cursor: 'pointer', margin: '2px 0',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                borderLeft: page === t.id ? '2px solid ' + T.accent : '2px solid transparent',
+              }}
+            >
+              {t.icon}
+            </button>
           ))}
         </div>
 
-        <button onClick={() => setShowCreate(true)} style={{ background: T.accent, color: '#fff', border: 'none', borderRadius: 7, padding: '6px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}>
-          + New Job
-        </button>
+        {/* Main Content Area */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {/* Header */}
+          <div style={{ height: 40, background: T.card, borderBottom: '1px solid ' + T.border, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: T.white }}>{activeTab.label}</span>
+              <span style={{ fontSize: 10, color: T.textDark }}>— JobSense</span>
+            </div>
+            <button onClick={() => setShowCreate(true)} style={{ background: T.accent, color: '#fff', border: 'none', borderRadius: 5, padding: '5px 12px', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+              + New Job
+            </button>
+          </div>
+
+          {/* Page Content */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+            {page === 'today' && <TodayPage jobs={jobs} onSelect={setSel} />}
+            {page === 'board' && <BoardPage jobs={jobs} onSelect={setSel} />}
+            {page === 'jobs' && <JobsPage jobs={jobs} onSelect={setSel} />}
+            {page === 'quotes' && <QuoteSensePage />}
+            {page === 'finance' && <FinPage jobs={jobs} onSelect={setSel} />}
+          </div>
+        </div>
+
+        {/* Right Detail Panel */}
+        {sel && (
+          <div style={{ width: 390, background: T.card, borderLeft: '1px solid ' + T.border, display: 'flex', flexDirection: 'column', flexShrink: 0, overflow: 'hidden' }}>
+            <JobPanel job={sel} onClose={() => setSel(null)} onMove={move} />
+          </div>
+        )}
       </div>
 
-      {/* Page content */}
-      {page === 'today' && <TodayPage jobs={jobs} onSelect={setSel} />}
-      {page === 'board' && <BoardPage jobs={jobs} onSelect={setSel} />}
-      {page === 'jobs' && <JobsPage jobs={jobs} onSelect={setSel} />}
-      {page === 'quotes' && <QuoteSensePage />}
-      {page === 'finance' && <FinPage jobs={jobs} onSelect={setSel} />}
+      {/* Status Bar */}
+      <div style={{ height: 22, background: '#0D0D0D', borderTop: '1px solid ' + T.border, display: 'flex', alignItems: 'center', padding: '0 14px', fontSize: 10, color: T.textMuted, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <span style={{ color: T.accent, fontWeight: 600 }}>JobSense</span>
+          <span>Jobs: {jobs.length}</span>
+          <span>Active: {jobs.filter(j => !['paid', 'approved', 'invoiced'].includes(j.status)).length}</span>
+          <span>MTD: {$(jobs.reduce((s, j) => s + j.quoted, 0))}</span>
+        </div>
+        <div style={{ flex: 1 }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {['HubSpot', 'Xero', 'Fireflies', 'EverSense'].map((s) => (
+            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+              <Dot color={T.green} size={4} />
+              <span>{s}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
-      {/* Job panel overlay */}
-      {sel && <div onClick={() => setSel(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 250 }} />}
-      {sel && <JobPanel job={sel} onClose={() => setSel(null)} onMove={move} />}
-
-      {/* Create job modal */}
       {showCreate && <CreateJobModal onClose={() => setShowCreate(false)} onCreate={create} />}
     </div>
   );
